@@ -1,6 +1,9 @@
 {
   "name": "chat-app",
   "version": "0.1.0",
+  "engines": {
+    "node": "16.x"
+  },
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -22,6 +25,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.2",
     "firebase": "^9.9.4",
+    "firebase-admin": "^11.0.1",
     "http": "^0.0.1-security",
     "websocket": "^1.0.34"
   },

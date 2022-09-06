@@ -1,3 +1,4 @@
+
 const { getUniqueID, logger } = require('./utils');
 const db = require('./firebase/chat');
 const wsServer = require('./server');
@@ -19,14 +20,15 @@ wsServer.on('request', function (request) {
   const connection = request.accept(null, request.origin);
   clients[userID] = connection;
   try {
+
     clients[userID].sendUTF(JSON.stringify({ type: 'setUserId', userId: userID }));
     logger('New user connected: ' + userID);
   } catch (error) {
     logger('Error: ' + error);
   }
 
-  connection.on('message', (request) => {
-    const dataFromClient = JSON.parse(request.utf8Data);
+  connection.on('message', function (message) {
+    const dataFromClient = JSON.parse(message.utf8Data);
     switch (dataFromClient.type) {
 
     case 'login':

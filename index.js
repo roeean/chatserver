@@ -1,16 +1,6 @@
-const http = require('http');
-const webSocketServer = require('websocket').server;
-
 const { getUniqueID, logger } = require('./utils');
 const db = require('./firebase/chat');
-
-// Server setup
-const port = process.env.PORT || 8000;
-const server = http.createServer();
-server.listen(port);
-
-const wsServer = new webSocketServer({ httpServer: server });
-logger(`listening on port ${port}`);
+const wsServer = require('./server');
 
 // Clients storage and handling
 const clients = {};
@@ -28,11 +18,15 @@ wsServer.on('request', function (request) {
   // Set new client
   const connection = request.accept(null, request.origin);
   clients[userID] = connection;
-  clients[userID].sendUTF(JSON.stringify({ type: 'setUserId', userId: userID }));
-  logger('New user connected: ' + userID);
+  try {
+    clients[userID].sendUTF(JSON.stringify({ type: 'setUserId', userId: userID }));
+    logger('New user connected: ' + userID);
+  } catch (error) {
+    logger('Error: ' + error);
+  }
 
-  connection.on('message', function (message) {
-    const dataFromClient = JSON.parse(message.utf8Data);
+  connection.on('message', (request) => {
+    const dataFromClient = JSON.parse(request.utf8Data);
     switch (dataFromClient.type) {
 
     case 'login':
